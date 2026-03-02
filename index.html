@@ -302,15 +302,28 @@
                 setClearConfirm(false);
             };
 
-            // Other helpers
+            // Other helpers (包含搜尋過濾與排序)
             const filteredInventory = useMemo(() => {
-                if (!searchTerm) return inventory;
-                const lowerTerm = searchTerm.toLowerCase();
-                return inventory.filter(item => 
-                    item.name.toLowerCase().includes(lowerTerm) || 
-                    item.itemNo.toLowerCase().includes(lowerTerm) ||
-                    (item.engName && item.engName.toLowerCase().includes(lowerTerm))
-                );
+                let result = [...inventory];
+                
+                // 1. 搜尋過濾
+                if (searchTerm) {
+                    const lowerTerm = searchTerm.toLowerCase();
+                    result = result.filter(item => 
+                        item.name.toLowerCase().includes(lowerTerm) || 
+                        item.itemNo.toLowerCase().includes(lowerTerm) ||
+                        (item.engName && item.engName.toLowerCase().includes(lowerTerm))
+                    );
+                }
+                
+                // 2. 依照品號 (itemNo) 進行遞增排序
+                result.sort((a, b) => {
+                    const noA = a.itemNo || '';
+                    const noB = b.itemNo || '';
+                    return noA.localeCompare(noB, 'zh-TW', { numeric: true });
+                });
+                
+                return result;
             }, [inventory, searchTerm]);
 
             const getPrintCount = (itemNo) => tags.filter(t => t.itemNo === itemNo).length;
@@ -536,12 +549,12 @@
                         </div>
                     </header>
 
-                    <main className="flex-1 overflow-y-auto p-4 pb-28 no-print">
+                    <main className="flex-1 overflow-y-auto p-4 pb-28 no-print relative">
                         {/* 1. 庫存 */}
                         {view === 'inventory' && (
-                            <div className="space-y-4">
+                            <>
                                 {/* 置頂固定搜尋與按鈕列 */}
-                                <div className="sticky top-0 z-10 bg-[#1a0e0b] pt-4 pb-2 -mx-4 px-4 -mt-4 shadow-[0_4px_10px_rgba(0,0,0,0.5)]">
+                                <div className="sticky top-0 z-10 bg-[#1a0e0b] pt-4 pb-4 -mx-4 px-4 -mt-4 shadow-[0_4px_10px_rgba(0,0,0,0.5)] border-b border-[#E1C284]/10">
                                     <div className="bg-[#2B130F] p-4 rounded-sm border border-[#E1C284]/30">
                                         <h2 className="font-bold text-lg mb-3 flex items-center gap-2"><Icon name="Database" size={20}/> 商品庫存 ({inventory.length})</h2>
                                         <div className="flex gap-2 mb-3">
@@ -553,11 +566,18 @@
                                         <div className="flex gap-2 text-xs">
                                             <button onClick={() => csvInputRef.current.click()} className="flex items-center gap-1 bg-[#E1C284]/20 px-3 py-1.5 rounded-full border border-[#E1C284]/30"><Icon name="FileSpreadsheet" size={12}/> 匯入</button>
                                             <button onClick={downloadTemplate} className="flex items-center gap-1 bg-[#E1C284]/20 px-3 py-1.5 rounded-full border border-[#E1C284]/30"><Icon name="Download" size={12}/> 範本</button>
-                                            <button onClick={addNewToInventory} className="flex items-center gap-1 bg-[#E1C284] text-[#2B130F] px-3 py-1.5 rounded-full font-bold ml-auto"><Icon name="Plus" size={12}/> 新增</button>
+                                            <div className="ml-auto flex gap-2">
+                                                {inventory.length > 0 && (
+                                                    <button onClick={() => setClearInventoryConfirm(true)} className="flex items-center gap-1 text-red-400 px-3 py-1.5 rounded-full border border-red-400/50 hover:bg-red-400/20"><Icon name="Trash2" size={12}/> 清空</button>
+                                                )}
+                                                <button onClick={addNewToInventory} className="flex items-center gap-1 bg-[#E1C284] text-[#2B130F] px-3 py-1.5 rounded-full font-bold"><Icon name="Plus" size={12}/> 新增</button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div className="space-y-2">
+                                
+                                {/* 庫存列表 */}
+                                <div className="space-y-2 mt-4">
                                     {filteredInventory.map(item => {
                                         const count = getPrintCount(item.itemNo);
                                         return (
@@ -588,7 +608,7 @@
                                         )
                                     })}
                                 </div>
-                            </div>
+                            </>
                         )}
 
                         {/* 2. 待印 */}
