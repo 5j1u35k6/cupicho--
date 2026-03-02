@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CupiCho Price Tag System v5.12</title>
+    <title>CupiCho Price Tag System v5.15</title>
     
     <!-- 1. 載入 Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -19,9 +19,9 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
-    <!-- 5. 載入高質感雲端字型 (確保所有裝置顯示一致) -->
+    <!-- 5. 載入高質感雲端字型 (移除學院風，改用經典明體) -->
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Libre+Barcode+39&family=Noto+Serif+TC:wght@400;700;900&family=Shippori+Mincho:wght@700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Libre+Barcode+39&family=Noto+Serif+TC:wght@400;700;900&family=Shippori+Mincho:wght@400;700;800&display=swap');
         
         /* 螢幕上強制隱藏列印專用區 */
         .print-container {
@@ -70,7 +70,7 @@
 
     <script type="text/babel" data-presets="react">
         const { useState, useEffect, useRef, useMemo } = React;
-        const VERSION = "v5.14"; 
+        const VERSION = "v5.15"; 
         
         // Lucide Icons
         const Icon = ({ name, size = 18, className }) => {
@@ -534,7 +534,7 @@
             };
 
             const PriceTag = ({ tag }) => (
-                <div className="cupicho-tag relative flex overflow-hidden box-border" style={{ width: '80mm', height: '50mm', backgroundColor: '#2B130F', color: '#E1C284', fontFamily: '"Noto Serif TC", serif' }}>
+                <div className="cupicho-tag relative flex overflow-hidden box-border" style={{ width: '80mm', height: '50mm', backgroundColor: '#2B130F', color: '#E1C284', fontFamily: '"Shippori Mincho", "Noto Serif TC", serif' }}>
                     <div className="w-[35%] h-full flex flex-col pl-3 pt-3 pb-2 relative z-10">
                         <div className="h-[30%] flex items-start -ml-1">
                             {customLogo ? 
@@ -542,13 +542,13 @@
                                 <svg viewBox="0 0 100 45" className="w-[90%] h-auto">
                                     <ellipse cx="50" cy="22.5" rx="48" ry="20" fill="none" stroke="#E1C284" strokeWidth="1.5" />
                                     <ellipse cx="50" cy="22.5" rx="45" ry="17" fill="none" stroke="#E1C284" strokeWidth="0.5" opacity="0.5"/>
-                                    <text x="50" y="24" textAnchor="middle" fill="#E1C284" fontSize="16" fontFamily="'Cinzel', serif" fontWeight="bold" letterSpacing="0.5">CupiCho</text>
+                                    <text x="50" y="24" textAnchor="middle" fill="#E1C284" fontSize="16" fontFamily='"Shippori Mincho", "Noto Serif TC", serif' fontWeight="bold" letterSpacing="0.5">CupiCho</text>
                                     <text x="50" y="36" textAnchor="middle" fill="#E1C284" fontSize="7" fontFamily="sans-serif" letterSpacing="1">丘比巧</text>
                                 </svg>
                             }
                         </div>
                         <div className="flex-1 flex items-start pt-6 pl-1">
-                            <div className="flex items-baseline" style={{ fontFamily: '"Cinzel", serif' }}>
+                            <div className="flex items-baseline" style={{ fontFamily: '"Shippori Mincho", "Noto Serif TC", serif' }}>
                                 <span style={{ fontSize: '14pt', marginRight: '3px' }}>$</span>
                                 <span style={{ fontSize: '20pt', lineHeight: '1' }}>{tag.price}</span>
                             </div>
@@ -557,16 +557,16 @@
                             <div style={{ fontFamily: '"Libre Barcode 39", cursive', fontSize: '50px', color: '#E1C284', lineHeight: 0.7, whiteSpace: 'nowrap', marginLeft: '-10px', transform: 'scaleX(0.6)', transformOrigin: 'left bottom', marginBottom: '2px' }}>
                                 {tag.itemNo ? `*${tag.itemNo}*` : ''}
                             </div>
-                            <div className="text-[9px] tracking-widest text-[#E1C284] leading-none" style={{ fontFamily: '"Cinzel", serif', fontWeight: 'bold' }}>{tag.itemNo}</div>
+                            <div className="text-[9px] tracking-widest text-[#E1C284] leading-none" style={{ fontFamily: '"Shippori Mincho", "Noto Serif TC", serif', fontWeight: 'bold' }}>{tag.itemNo}</div>
                         </div>
                     </div>
                     <div className="w-[65%] h-full flex flex-col pr-4 py-3 pl-1 relative z-10">
-                        <div style={{ fontFamily: '"Cinzel", "Noto Serif TC", serif', fontSize: '18pt', lineHeight: '1.2', marginBottom: '4px', fontWeight: 'bold' }}>{tag.brand}</div>
+                        <div style={{ fontFamily: '"Shippori Mincho", "Noto Serif TC", serif', fontSize: '18pt', lineHeight: '1.2', marginBottom: '4px', fontWeight: 'bold' }}>{tag.brand}</div>
                         <div style={{ fontFamily: '"Shippori Mincho", "Noto Serif TC", serif', fontSize: '14pt', lineHeight: '1.3', marginBottom: '2px', fontWeight: 'bold' }}>{tag.name}</div>
-                        <div style={{ fontFamily: '"Cinzel", "Noto Serif TC", serif', fontSize: '6pt', lineHeight: '1.2', textTransform: 'uppercase', letterSpacing: '0.5px', opacity: 0.9 }}>{tag.engName}</div>
+                        <div style={{ fontFamily: '"Shippori Mincho", "Noto Serif TC", serif', fontSize: '6pt', lineHeight: '1.2', textTransform: 'uppercase', letterSpacing: '0.5px', opacity: 0.9 }}>{tag.engName}</div>
                         <div className="flex gap-5 absolute bottom-7 right-4" style={{ fontSize: '10pt' }}>
-                            <span style={{ fontFamily: '"Cinzel", "Noto Serif TC", serif', fontWeight: 'bold' }}>{tag.weight}</span>
-                            <span style={{ fontFamily: '"Noto Serif TC", serif', fontWeight: 'bold' }}>{tag.country}</span>
+                            <span style={{ fontFamily: '"Shippori Mincho", "Noto Serif TC", serif', fontWeight: 'bold' }}>{tag.weight}</span>
+                            <span style={{ fontFamily: '"Shippori Mincho", "Noto Serif TC", serif', fontWeight: 'bold' }}>{tag.country}</span>
                         </div>
                     </div>
                 </div>
@@ -583,7 +583,7 @@
                             <div className="text-[#E1C284]"><Icon name="Palette" size={20}/></div>
                             <div>
                                 <div className="flex items-center gap-2">
-                                    <h1 className="font-bold text-[#E1C284] text-base tracking-widest" style={{ fontFamily: '"Cinzel", serif' }}>CUPICHO</h1>
+                                    <h1 className="font-bold text-[#E1C284] text-base tracking-widest" style={{ fontFamily: '"Shippori Mincho", "Noto Serif TC", serif' }}>CUPICHO</h1>
                                     <span className="text-[10px] bg-[#E1C284]/20 text-[#E1C284] px-1.5 py-0.5 rounded border border-[#E1C284]/30">{VERSION}</span>
                                 </div>
                                 <p className={`text-[10px] flex items-center gap-1 ${isCloudMode ? 'text-green-400' : 'text-[#E1C284]/60'}`}>
@@ -638,9 +638,9 @@
                                                     {!item.engName ? (
                                                         <div className="text-[10px] text-red-400/80 italic flex items-center gap-1"><Icon name="AlertCircle" size={10}/> 缺少英文</div>
                                                     ) : (
-                                                        <div className="text-[10px] text-[#E1C284]/50 truncate uppercase" style={{ fontFamily: '"Cinzel", serif' }}>{item.engName}</div>
+                                                        <div className="text-[10px] text-[#E1C284]/50 truncate uppercase" style={{ fontFamily: '"Shippori Mincho", "Noto Serif TC", serif' }}>{item.engName}</div>
                                                     )}
-                                                    <div className="text-xs opacity-70" style={{ fontFamily: '"Cinzel", serif' }}>${item.price}</div>
+                                                    <div className="text-xs opacity-70" style={{ fontFamily: '"Shippori Mincho", "Noto Serif TC", serif' }}>${item.price}</div>
                                                 </div>
                                                 <div className="flex items-center gap-2">
                                                      <button onClick={() => openEdit(item, 'inventory')} className="p-2 text-[#E1C284]/50 hover:text-[#E1C284]"><Icon name="Edit3" size={16}/></button>
@@ -678,11 +678,11 @@
                                                     {!tag.engName ? (
                                                         <p className="text-[10px] text-red-400/80 italic flex items-center gap-1"><Icon name="AlertCircle" size={10}/> 缺少英文</p>
                                                     ) : (
-                                                        <p className="text-[10px] text-[#E1C284]/60 truncate uppercase" style={{ fontFamily: '"Cinzel", serif' }}>{tag.engName}</p>
+                                                        <p className="text-[10px] text-[#E1C284]/60 truncate uppercase" style={{ fontFamily: '"Shippori Mincho", "Noto Serif TC", serif' }}>{tag.engName}</p>
                                                     )}
                                                 </div>
                                                 <div className="flex flex-col items-end gap-1">
-                                                    <span className="text-xl font-serif text-[#E1C284]" style={{ fontFamily: '"Cinzel", serif' }}>${tag.price}</span>
+                                                    <span className="text-xl font-serif text-[#E1C284]" style={{ fontFamily: '"Shippori Mincho", "Noto Serif TC", serif' }}>${tag.price}</span>
                                                     <button className="p-2 text-[#E1C284]/50 hover:text-red-400" onClick={(e) => { e.stopPropagation(); setDeleteConfirmId(tag.id); setEditSource('list'); }}><Icon name="Trash2" size={16}/></button>
                                                 </div>
                                             </div>
