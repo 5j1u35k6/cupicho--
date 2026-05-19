@@ -3,35 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CupiCho Price Tag System v5.22</title>
+    <title>CupiCho Price Tag System v5.23</title>
     
+    <!-- 終極手機崩潰偵測與攔截雷達 -->
     <script>
         window.addEventListener('error', function(e) {
             var errorDiv = document.createElement('div');
-            errorDiv.style.cssText = 'position:fixed; top:0; left:0; width:100%; background:#ef4444; color:white; z-index:9999; padding:10px; font-size:12px; word-break:break-all; font-family:sans-serif;';
-            errorDiv.innerText = '系統錯誤: ' + e.message + ' (行數: ' + e.lineno + ')';
-            document.body.appendChild(errorDiv);
-        });
-        window.addEventListener('unhandledrejection', function(e) {
-            var errorDiv = document.createElement('div');
-            errorDiv.style.cssText = 'position:fixed; top:0; left:0; width:100%; background:#f97316; color:white; z-index:9999; padding:10px; font-size:12px; word-break:break-all; font-family:sans-serif;';
-            errorDiv.innerText = '非同步錯誤: ' + (e.reason ? e.reason.message : '未知錯誤');
+            errorDiv.style.cssText = 'position:fixed; top:0; left:0; width:100%; background:#ef4444; color:white; z-index:9999; padding:16px; font-size:14px; word-break:break-all; font-family:sans-serif; box-shadow: 0 4px 10px rgba(0,0,0,0.5); line-height: 1.5;';
+            
+            // 針對 LINE 或手機瀏覽器阻擋檔案的專屬提示
+            if (e.message === 'Script error.' || e.message.indexOf('Script error') > -1) {
+                errorDiv.innerHTML = '<b>⚠️ 網路阻擋錯誤</b><br><br>系統偵測到您的瀏覽器（可能是 LINE 內建視窗）阻擋了核心檔案的下載。<br><br><b>💡 解決方法：</b><br>請點擊螢幕右上角的按鈕，選擇<b>「用 Safari 開啟」</b>或<b>「用 Chrome 開啟」</b>，即可正常顯示畫面！';
+            } else {
+                errorDiv.innerHTML = '<b>系統錯誤:</b> ' + e.message + ' (行數: ' + e.lineno + ')';
+            }
             document.body.appendChild(errorDiv);
         });
     </script>
 
+    <!-- 1. 載入 Tailwind CSS (維持不變) -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <!-- 2. 改用 Cloudflare 全球穩定 CDN 載入 React 核心，並加入 crossorigin 防止被阻擋 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js" crossorigin="anonymous"></script>
     
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- 3. 改用 Cloudflare 載入 Babel -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.6/babel.min.js" crossorigin="anonymous"></script>
 
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <!-- 4. 載入 Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js" crossorigin="anonymous"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js" crossorigin="anonymous"></script>
 
-    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+    <!-- 5. 改用 Cloudflare 載入 JsBarcode (專業條碼產生引擎) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsbarcode/3.11.5/JsBarcode.all.min.js" crossorigin="anonymous"></script>
 
+    <!-- 6. 載入高質感雲端字型 -->
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Noto+Serif+TC:wght@400;700;900&family=Shippori+Mincho:wght@400;700;800&display=swap');
         
@@ -77,11 +84,20 @@
     </style>
 </head>
 <body class="bg-[#1a0e0b] text-[#E1C284] m-0 overflow-hidden print:overflow-visible print:bg-white">
-    <div id="root"></div>
+    
+    <!-- 增加載入中提示，避免網路慢時畫面全黑 -->
+    <div id="root">
+        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; color: #E1C284; font-family: sans-serif;">
+            <div style="width: 40px; height: 40px; border: 3px solid rgba(225,194,132,0.3); border-top-color: #E1C284; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px;"></div>
+            <p style="font-weight: bold; letter-spacing: 2px;">系統載入中</p>
+            <p style="font-size: 12px; opacity: 0.6; margin-top: 8px;">若長時間無畫面，請以 Safari 或 Chrome 開啟</p>
+            <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
+        </div>
+    </div>
 
     <script type="text/babel" data-presets="react">
         const { useState, useEffect, useRef, useMemo } = React;
-        const VERSION = "v5.22"; 
+        const VERSION = "v5.23"; 
         
         // Lucide Icons
         const Icon = ({ name, size = 18, className }) => {
@@ -118,24 +134,28 @@
             );
         };
 
-        // 專業 SVG 條碼產生組件 (還原至 v5.19 清晰版)
+        // 專業 SVG 條碼產生組件 (還原至 v5.19 獨立乾淨的條碼版，增加安全檢查)
         const BarcodeGenerator = ({ value }) => {
             const barcodeRef = useRef(null);
 
             useEffect(() => {
                 if (barcodeRef.current && value) {
                     try {
+                        if (typeof JsBarcode === 'undefined') {
+                            console.warn("JsBarcode 尚未載入");
+                            return;
+                        }
                         JsBarcode(barcodeRef.current, value, {
                             format: "CODE128", 
                             width: 1.5,         
                             height: 28,         
-                            displayValue: false,
+                            displayValue: false, // 隱藏預設數字，由下方自訂字體呈現
                             background: "transparent",
                             lineColor: "#E1C284",
                             margin: 0
                         });
                     } catch (error) {
-                        console.error("Barcode generation failed:", error);
+                        console.error("條碼生成失敗:", error);
                     }
                 }
             }, [value]);
@@ -143,7 +163,7 @@
             return <svg ref={barcodeRef} className="max-w-[120%] h-auto origin-bottom-left scale-90 -ml-1"></svg>;
         };
 
-        // 價格牌組件 (移出 App，減輕手機記憶體負擔)
+        // 價格牌組件
         const PriceTag = ({ tag, customLogo }) => (
             <div className="cupicho-tag relative flex overflow-hidden box-border" style={{ width: '80mm', height: '50mm', backgroundColor: '#2B130F', color: '#E1C284', fontFamily: '"Shippori Mincho", "Noto Serif TC", serif' }}>
                 <div className="w-[35%] h-full flex flex-col pl-3 pt-3 pb-2 relative z-10">
@@ -320,28 +340,4 @@
             }, [customLogo, isLoaded]);
 
             // CRUD Handlers
-            const handleAddInventory = (item) => {
-                if (isCloudMode && db) db.collection('inventory').doc(item.id).set(item);
-                else setInventory([item, ...inventory]);
-            };
-
-            const handleUpdateItem = (id, field, value) => {
-                if (isCloudMode && db) {
-                    const collectionName = editSource === 'inventory' ? 'inventory' : 'print_list';
-                    db.collection(collectionName).doc(id).update({ [field]: value });
-                } else {
-                    if (editSource === 'inventory') setInventory(inventory.map(t => t.id === id ? { ...t, [field]: value } : t));
-                    else setTags(tags.map(t => t.id === id ? { ...t, [field]: value } : t));
-                }
-            };
-
-            const handleDeleteItem = (id) => {
-                if (isCloudMode && db) {
-                    const collectionName = editSource === 'inventory' ? 'inventory' : 'print_list';
-                    db.collection(collectionName).doc(id).delete();
-                } else {
-                    if (editSource === 'inventory') setInventory(inventory.filter(t => t.id !== id));
-                    else setTags(tags.filter(t => t.id !== id));
-                }
-                setDeleteConfirmId(null);
-                if (edi
+  
